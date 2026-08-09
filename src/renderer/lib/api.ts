@@ -2,6 +2,7 @@
 // Вне Electron (vite dev) делаем заглушку, чтобы UI можно было посмотреть в браузере.
 
 import type { RouteDecision, LLMMessage, LLMResponse } from '@shared/types';
+import { BUILTIN_MODELS, BUILTIN_TOPOLOGIES, BUILTIN_ROLES, BUILTIN_CASE_STUDIES } from '@shared/masrouterData';
 
 export interface MasRouterApi {
   getVersion: () => Promise<string>;
@@ -45,6 +46,23 @@ declare global {
   }
 }
 
+const MOCK_PROVIDERS = [
+  { id: 'ollama-local', kind: 'ollama', label: 'Ollama Local', baseUrl: 'http://127.0.0.1:11434', apiKeyMasked: '', enabled: false },
+  { id: 'openai-default', kind: 'openai', label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', apiKeyMasked: '', enabled: false },
+  { id: 'minimax-default', kind: 'minimax', label: 'MiniMax', baseUrl: 'https://api.minimax.chat/v1', apiKeyMasked: '', enabled: false },
+  { id: 'stepfun-default', kind: 'stepfun', label: 'StepFun', baseUrl: 'https://api.stepfun.com/v1', apiKeyMasked: '', enabled: false },
+  { id: 'openai-compatible-default', kind: 'openai-compatible', label: 'OpenAI-compatible (Claude / Gemini / локальный прокси)', baseUrl: '', apiKeyMasked: '', enabled: false }
+];
+
+const MOCK_SETTINGS = {
+  theme: 'dark' as const,
+  language: 'ru' as const,
+  autoLaunch: false,
+  shellEnabled: false,
+  onboardingDone: false,
+  safeStorageUnlocked: false
+};
+
 const mockFallback: MasRouterApi = {
   getVersion: async () => '0.1.0 (browser preview)',
   getPlatform: async () => 'browser',
@@ -53,19 +71,35 @@ const mockFallback: MasRouterApi = {
   bootstrap: async () => ({
     version: '0.1.0 (browser preview)',
     platform: 'browser',
-    settings: { theme: 'dark', language: 'ru', shellEnabled: false },
+    settings: MOCK_SETTINGS,
     constants: { GAMMA: 6, LAMBDAS: { ECO: 25, BALANCED: 15, QUALITY: 5 } }
   }),
   routerCalculate: async () => {
-    throw new Error('routerCalculate недоступен вне Electron — откройте в приложении');
+    throw new Error('routerCalculate недоступен вне Electron — откройте в установленном приложении');
   },
   routerPing: async () => 'pong (mock)',
-  providerList: async () => [],
-  providerTest: async () => ({ ok: false, message: 'Browser preview' }),
+  providerList: async () => MOCK_PROVIDERS,
+  providerTest: async () => ({ ok: false, message: 'Browser preview — тест недоступен' }),
   providerChat: async () => {
     throw new Error('LLM недоступен в browser preview');
   },
-  storageGet: async () => null,
+  storageGet: async (key: string) => {
+    const map: Record<string, unknown> = {
+      models: BUILTIN_MODELS,
+      roles: BUILTIN_ROLES,
+      topologies: BUILTIN_TOPOLOGIES,
+      providers: MOCK_PROVIDERS,
+      caseStudies: BUILTIN_CASE_STUDIES,
+      codexProfiles: [
+        { id: 'codex-default', name: 'Codex CLI по умолчанию', cliPath: 'codex', commandTemplate: 'codex --prompt-file "{task_file}" --model "{model}" --cd "{project_path}"', projectPath: '', gitBranch: 'main' }
+      ],
+      serverProfiles: [],
+      promptHistory: [],
+      costLogs: [],
+      appLogs: []
+    };
+    return map[key] ?? null;
+  },
   storageSet: async () => ({ ok: true }),
   storageExport: async () => ({ ok: false, canceled: true }),
   storageImport: async () => ({ ok: false, canceled: true }),
@@ -74,8 +108,8 @@ const mockFallback: MasRouterApi = {
   apiKeyMask: async () => '',
   apiKeyDelete: async () => ({ ok: true }),
   codexCreateTask: async () => ({ ok: false, path: '' }),
-  codexCopyCommand: async () => ({ ok: true, command: 'codex ...' }),
-  codexCopySsh: async () => ({ ok: true, command: 'ssh ...' }),
+  codexCopyCommand: async () => ({ ok: true, command: 'codex --prompt-file "..." --model "..."' }),
+  codexCopySsh: async () => ({ ok: true, command: 'ssh -p 22 -i ~/.ssh/id_ed25519 user@host "cd /path && git status"' }),
   shellRun: async () => ({ ok: false, blocked: true, blockReason: 'Browser preview' }),
   logsList: async () => [],
   logsClear: async () => ({ ok: true }),
