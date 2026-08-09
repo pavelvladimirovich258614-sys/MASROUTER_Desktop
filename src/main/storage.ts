@@ -173,8 +173,6 @@ export function clearAppLogs(): void {
 }
 
 // === Безопасное хранение API-ключей через safeStorage ===
-const API_KEY_PREFIX = 'enc:';
-
 export function setApiKey(providerId: string, key: string): void {
   if (!safeStorage.isEncryptionAvailable()) {
     // Без шифрования — отказ, чтобы не светить ключ в plain JSON.

@@ -363,7 +363,7 @@ export function calculateRoute(input: RouterInput): RouteDecision {
   const trimmedRoles =
     roleChain.length >= agentCount
       ? roleChain.slice(0, agentCount)
-      : [...roleChain, ...Array(agentCount - roleChain.length).fill(null).map((_, i) => ROLE_MAP['Reflector']!)].slice(0, agentCount);
+      : [...roleChain, ...Array(agentCount - roleChain.length).fill(null).map(() => ROLE_MAP['Reflector']!)].slice(0, agentCount);
 
   cascade.push({
     stage: 'Fθr',

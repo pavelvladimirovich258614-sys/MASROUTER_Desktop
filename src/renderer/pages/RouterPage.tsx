@@ -4,7 +4,7 @@ import { api } from '../lib/api';
 import { SAMPLE_TASKS } from '../../../shared/masrouterData';
 import { CascadeDiagram } from '../components/CascadeDiagram';
 import { HelpTip } from '../components/HelpTip';
-import { riskLabel, costModeLabel, costModeClass, topologyLabel, copyToClipboard } from '../lib/validators';
+import { costModeLabel, costModeClass, topologyLabel, copyToClipboard } from '../lib/validators';
 import type { RouteDecision, TaskType, Complexity } from '../../../shared/types';
 
 const TASK_TYPES: { value: TaskType; label: string }[] = [

@@ -3,7 +3,6 @@
 
 import { ipcMain, shell, app, BrowserWindow, dialog } from 'electron';
 import { promises as fs } from 'node:fs';
-import * as path from 'node:path';
 import { IPC } from '../../shared/constants';
 import { calculateRoute } from './routerEngine';
 import {
@@ -12,11 +11,8 @@ import {
   setSettings,
   getProviders,
   setProviders,
-  getModels,
   setModels,
-  getRoles,
   setRoles,
-  getTopologies,
   setTopologies,
   getCodexProfiles,
   setCodexProfiles,

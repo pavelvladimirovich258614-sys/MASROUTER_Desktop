@@ -6,7 +6,6 @@ import { MASROUTER_BENCHMARKS } from '../../../shared/masrouterData';
 import { formatDate, lambdaFor } from '../lib/validators';
 
 export const Dashboard: React.FC = () => {
-  const settings = useAppStore((s) => s.settings);
   const providers = useAppStore((s) => s.providers);
   const lastDecision = useAppStore((s) => s.lastDecision);
   const [history, setHistory] = useState<any[]>([]);
