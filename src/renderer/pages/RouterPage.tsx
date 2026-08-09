@@ -124,7 +124,24 @@ export const RouterPage: React.FC = () => {
       <div className="page__header">
         <div>
           <div className="page__title">Маршрутизатор задач</div>
-          <div className="page__subtitle">Каскад Fθt → Fθr → Fθm из статьи arXiv:2502.11133</div>
+          <div className="page__subtitle">Главный экран. Создай задачу — получи план работы multi-agent системы.</div>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20, background: 'var(--color-panel-2)' }}>
+        <div className="card__title" style={{ fontSize: 14 }}>Что это и зачем</div>
+        <div className="muted" style={{ fontSize: 13, lineHeight: 1.6 }}>
+          Здесь ты вводишь задачу и получаешь готовый план работы: какую топологию выбрать (Chain / Tree / FullConnected / …),
+          какие роли назначить агентам (Analyst → Implementer → Tester → Reviewer), какие модели использовать (gpt-4o-mini / deepseek-chat / Ollama).
+          <br /><br />
+          Под капотом — каскад <strong>Fθ = Fθm ∘ Fθr ∘ Fθt</strong> из статьи arXiv:2502.11133.
+          <ol style={{ paddingLeft: 20, marginTop: 6 }}>
+            <li><strong>Risk Score</strong> (1/2/3) — на основе флагов риска (деньги, оплата, БД, безопасность, деплой).</li>
+            <li><strong>Cost Mode</strong> (ECO / BALANCED / QUALITY) и λ (25 / 15 / 5) — trade-off между качеством и стоимостью.</li>
+            <li><strong>Fθt</strong> — выбор топологии (Single / CoT / Chain / Tree / FullConnected / Debate / Reflection).</li>
+            <li><strong>Fθr</strong> — выбор цепочки ролей (макс 6, γ=6 из статьи).</li>
+            <li><strong>Fθm</strong> — выбор модели для каждой роли (strong / balanced / cheap / local).</li>
+          </ol>
         </div>
       </div>
 

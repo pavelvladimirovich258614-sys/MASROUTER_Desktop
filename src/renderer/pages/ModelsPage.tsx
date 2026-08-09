@@ -46,7 +46,25 @@ export const ModelsPage: React.FC = () => {
       <div className="page__header">
         <div>
           <div className="page__title">Модели и провайдеры</div>
-          <div className="page__subtitle">6 предзаполненных моделей из Приложения E.1 статьи.</div>
+          <div className="page__subtitle">Подключение LLM-провайдеров и управление библиотекой моделей.</div>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20, background: 'var(--color-panel-2)' }}>
+        <div className="card__title" style={{ fontSize: 14 }}>Что это и зачем</div>
+        <div className="muted" style={{ fontSize: 13, lineHeight: 1.6 }}>
+          <strong>Провайдер</strong> — это сервис, через который идут запросы (Ollama локально, OpenAI в облаке, MiniMax, StepFun, OpenAI-compatible).
+          <br />
+          <strong>Модель</strong> — конкретный LLM (gpt-4o-mini, claude-3-5-haiku, …). У каждой модели есть тир: <em>cheap</em> / <em>balanced</em> / <em>strong</em> / <em>local-light</em>.
+          Каскад MasRouter выбирает модель по тиру: QUALITY → strong, BALANCED → balanced, ECO → cheap.
+          <br /><br />
+          <strong>Шаги подключения:</strong>
+          <ol style={{ paddingLeft: 20, marginTop: 6 }}>
+            <li>В таблице «Провайдеры» нажми <strong>«+ Установить»</strong> в колонке API Key, введи ключ — он сохранится зашифрованным (safeStorage, ОС-уровень).</li>
+            <li>Поставь чекбокс <strong>«Включён»</strong> в строке провайдера.</li>
+            <li>Нажми <strong>«✓ Тест»</strong> — приложение реально постучится в API и покажет результат (HTTP-статус + latency).</li>
+            <li>В таблице «Модели (Приложение E.1)» поставь чекбокс <strong>«Включена»</strong> на нужных моделях. Только они попадут в кандидаты для маршрутизации.</li>
+          </ol>
         </div>
       </div>
 

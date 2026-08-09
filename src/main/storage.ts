@@ -20,7 +20,8 @@ const storeSchema = z.object({
   serverProfiles: z.array(serverProfileSchema),
   promptHistory: z.array(z.any()),
   costLogs: z.array(z.any()),
-  appLogs: z.array(z.any())
+  appLogs: z.array(z.any()),
+  __schemaVersion: z.number().optional()
 });
 
 export type StoreShape = z.infer<typeof storeSchema>;
@@ -98,20 +99,77 @@ const DEFAULTS: StoreShape = {
 
 let store: Store<StoreShape> | null = null;
 
+/**
+ * Версия схемы storage. При изменении схемы (новые seed-провайдеры, новые
+ * обязательные поля) — увеличить, чтобы миграция применилась заново.
+ */
+const STORAGE_SCHEMA_VERSION = 2;
+
 export function initStorage(): void {
   store = new Store<StoreShape>({
     name: 'masrouter-data',
     defaults: DEFAULTS,
     clearInvalidConfig: true
   });
-  // Миграция: убедимся, что все обязательные поля есть.
+  migrate();
+}
+
+/**
+ * Миграция storage. Применяется при каждом запуске, идемпотентна.
+ * Добавляет недостающие seed-провайдеры / роли / топологии / модели / кейс-стади
+ * в существующий store, не затирая пользовательские изменения.
+ */
+function migrate(): void {
+  if (!store) return;
   const cur = store.store;
+
+  // Базовые поля — если их нет, инициализируем дефолтами.
   if (!cur.settings) store.set('settings', DEFAULTS.settings);
-  if (!Array.isArray(cur.providers) || cur.providers.length === 0) store.set('providers', DEFAULTS.providers);
   if (!Array.isArray(cur.models) || cur.models.length === 0) store.set('models', DEFAULTS.models);
   if (!Array.isArray(cur.roles) || cur.roles.length === 0) store.set('roles', DEFAULTS.roles);
   if (!Array.isArray(cur.topologies) || cur.topologies.length === 0) store.set('topologies', DEFAULTS.topologies);
   if (!Array.isArray(cur.caseStudies) || cur.caseStudies.length === 0) store.set('caseStudies', DEFAULTS.caseStudies);
+
+  // Провайдеры: мигрируем аккуратно. Если никого нет — ставим defaults.
+  // Если есть, но кого-то из defaults не хватает (например, MiniMax) — добавляем.
+  let providers: any[] = Array.isArray(cur.providers) ? cur.providers : [];
+  if (providers.length === 0) {
+    providers = DEFAULTS.providers;
+    store.set('providers', providers);
+  } else {
+    const existingIds = new Set(providers.map((p) => p.id));
+    const missing = DEFAULTS.providers.filter((p) => !existingIds.has(p.id));
+    if (missing.length > 0) {
+      providers = [...providers, ...missing];
+      store.set('providers', providers);
+    }
+  }
+
+  // Модели: то же самое — добавляем недостающие builtin-модели.
+  let models: any[] = Array.isArray(cur.models) ? cur.models : [];
+  if (models.length === 0) {
+    models = DEFAULTS.models;
+    store.set('models', models);
+  } else {
+    const existingIds = new Set(models.map((m) => m.id));
+    const missing = DEFAULTS.models.filter((m) => !existingIds.has(m.id));
+    if (missing.length > 0) {
+      models = [...models, ...missing];
+      store.set('models', models);
+    }
+  }
+
+  // Codex профиль по умолчанию: если нет ни одного — создаём.
+  if (!Array.isArray(cur.codexProfiles) || cur.codexProfiles.length === 0) {
+    store.set('codexProfiles', DEFAULTS.codexProfiles);
+  }
+
+  // Версия схемы.
+  const v = (cur as any).__schemaVersion;
+  if (v !== STORAGE_SCHEMA_VERSION) {
+    (cur as any).__schemaVersion = STORAGE_SCHEMA_VERSION;
+    store.set('__schemaVersion' as any, STORAGE_SCHEMA_VERSION as any);
+  }
 }
 
 function s(): Store<StoreShape> {
