@@ -196,9 +196,9 @@ export const ModelsPage: React.FC = () => {
             {providers.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <strong>{p.label}</strong>
+                  <strong style={{ color: 'var(--color-text)' }}>{p.label}</strong>
                   {PROVIDER_KIND_LABEL[p.kind] && (
-                    <div className="muted-soft" style={{ fontSize: 11, marginTop: 2 }}>{PROVIDER_KIND_LABEL[p.kind]}</div>
+                    <div style={{ fontSize: 11, marginTop: 2, color: 'var(--color-text)', opacity: 0.75 }}>{PROVIDER_KIND_LABEL[p.kind]}</div>
                   )}
                 </td>
                 <td className="mono" style={{ fontSize: 12, color: 'var(--color-muted-strong)' }}>{p.kind}</td>

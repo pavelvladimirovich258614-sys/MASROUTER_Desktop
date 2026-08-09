@@ -87,7 +87,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   toast(type, message) {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    // Дедупликация: если точно такой же toast (type+message) уже на экране
+    // и его возраст меньше 1.5 секунды — игнорируем. Иначе при многократных
+    // кликах по Test у пользователя спамится одинаковыми уведомлениями.
+    const now = Date.now();
+    const existing = get().toasts.find(
+      (t) => t.type === type && t.message === message && now - parseInt(t.id.split('-')[0], 10) < 1500
+    );
+    if (existing) return;
+    const id = `${now}-${Math.random().toString(36).slice(2, 6)}`;
     set({ toasts: [...get().toasts, { id, type, message }] });
     setTimeout(() => get().dismissToast(id), 4500);
   },

@@ -89,6 +89,20 @@ export const HELP_ARTICLES: HelpArticle[] = [
     relatedButtons: ['StepFun', 'API Key']
   },
   {
+    id: 'connect-anthropic-via-proxy',
+    title: 'Как подключить Anthropic Claude (через прокси / tokenplan)',
+    short: 'Anthropic Claude через OpenAI-compatible endpoint (tokenplan, локальный прокси, и т.п.).',
+    steps: [
+      'Anthropic официально не даёт OpenAI-compatible endpoint, поэтому прямое подключение к api.anthropic.com не работает.',
+      'Используй провайдер «OpenAI-compatible» в таблице Провайдеры.',
+      'В поле Base URL впиши адрес прокси. Например: https://api.tokenplan.ai/v1 или https://твой-прокси.ру/v1 (точное значение возьми из документации своего провайдера).',
+      'В поле «+ Установить ключ» введи свой API-ключ. Сохранится зашифрованным.',
+      'Поставь чекбокс «Вкл» и нажми «✓ Тест + модели» — приложение постучится в /models и подтянет список доступных моделей Claude.',
+      'Если провайдер не поддерживает /models в OpenAI-формате — тест упадёт, но ты можешь вручную добавить модели в БД. Скажи мне — добавлю UI.'
+    ],
+    relatedButtons: ['OpenAI-compatible', 'Base URL', 'Test + models']
+  },
+  {
     id: 'connect-openai',
     title: 'Как подключить OpenAI',
     short: 'OpenAI напрямую через api.openai.com.',
