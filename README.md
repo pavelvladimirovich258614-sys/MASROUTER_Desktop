@@ -1,5 +1,7 @@
 # MASROUTER Desktop
 
+**Languages:** 🇬🇧 [English](README.md) · 🇷🇺 [**Русский**](docs/ru/README.ru.md) · [Contributing](CONTRIBUTING.md) · [License](LICENSE) · [Changelog](CHANGELOG.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node 20+](https://img.shields.io/badge/node-20%2B-brightgreen)](https://nodejs.org)
 [![Electron 32](https://img.shields.io/badge/electron-32-blue)](https://electronjs.org)
@@ -438,22 +440,18 @@ Copyright (c) 2026 Pavel Novopoltsev and MASROUTER contributors.
 ## Russian documentation
 
 A full Russian-language description of the project, its theory, and its
-usage lives on the `docs/ru` branch:
+usage lives at [`docs/ru/README.ru.md`](docs/ru/README.ru.md). Click the
+language switcher at the top of this README to jump there, or open the
+file directly.
 
-```bash
-git fetch origin
-git checkout docs/ru
-cat docs/ru/README.ru.md
-```
-
-The Russian branch contains:
+The Russian documentation mirrors the English one and includes:
 
 - `docs/ru/README.ru.md` — что это, зачем, как работает (на русском)
-- `docs/ru/USER_GUIDE_RU.md`
-- `docs/ru/MODELS_SETUP_RU.md`
-- `docs/ru/CODEX_INTEGRATION_RU.md`
-- `docs/ru/MASROUTER_THEORY_RU.md`
-- `docs/ru/BUILD_RU.md`
+- `docs/USER_GUIDE_RU.md` — пошаговое руководство
+- `docs/MODELS_SETUP_RU.md` — настройка моделей
+- `docs/CODEX_INTEGRATION_RU.md` — связка с Codex
+- `docs/MASROUTER_THEORY_RU.md` — объяснение каскада
+- `docs/BUILD_RU.md` — сборка
 
 These mirror the in-app Russian help system and are kept in sync with the
 English documentation.
