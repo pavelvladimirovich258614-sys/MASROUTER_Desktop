@@ -121,6 +121,24 @@ export const SettingsPage: React.FC = () => {
         </div>
       </div>
 
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="card__title">Помощь</div>
+        <div className="row" style={{ marginTop: 10 }}>
+          <button
+            className="btn"
+            onClick={async () => {
+              await setSetting('onboardingDone', false);
+              toast('success', 'Онбординг запустится при следующем обновлении страницы (или перезапуске приложения)');
+            }}
+          >
+            🎓 Перезапустить онбординг
+          </button>
+        </div>
+        <div className="form-field__hint" style={{ marginTop: 8 }}>
+          Показывает пошаговый тур по 6 экранам приложения (Sidebar, Маршрутизатор, Модели, Case Study, Codex CLI, Справка).
+        </div>
+      </div>
+
       <div className="card">
         <div className="card__title">Шаблон команды Codex (по умолчанию)</div>
         <pre className="code-block" style={{ marginTop: 10 }}>{DEFAULT_CODEX_TEMPLATE}</pre>

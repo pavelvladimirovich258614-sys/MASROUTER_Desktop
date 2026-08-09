@@ -50,6 +50,30 @@ const DEFAULTS: StoreShape = {
       baseUrl: 'https://api.openai.com/v1',
       apiKeyMasked: '',
       enabled: false
+    },
+    {
+      id: 'minimax-default',
+      kind: 'minimax',
+      label: 'MiniMax',
+      baseUrl: 'https://api.MiniMax.chat/v1',
+      apiKeyMasked: '',
+      enabled: false
+    },
+    {
+      id: 'stepfun-default',
+      kind: 'stepfun',
+      label: 'StepFun',
+      baseUrl: 'https://api.stepfun.com/v1',
+      apiKeyMasked: '',
+      enabled: false
+    },
+    {
+      id: 'openai-compatible-default',
+      kind: 'openai-compatible',
+      label: 'OpenAI-compatible (Claude / Gemini / локальный прокси)',
+      baseUrl: '',
+      apiKeyMasked: '',
+      enabled: false
     }
   ],
   models: BUILTIN_MODELS,

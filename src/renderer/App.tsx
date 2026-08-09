@@ -4,6 +4,7 @@ import { useAppStore } from './store/appStore';
 import { Sidebar } from './components/Sidebar';
 import { Topbar } from './components/Topbar';
 import { Toasts } from './components/Toasts';
+import { OnboardingTour } from './components/OnboardingTour';
 import { Dashboard } from './pages/Dashboard';
 import { RouterPage } from './pages/RouterPage';
 import { CaseStudyPage } from './pages/CaseStudyPage';
@@ -58,6 +59,7 @@ const App: React.FC = () => {
         </Routes>
       </main>
       <Toasts />
+      <OnboardingTour />
     </div>
   );
 };

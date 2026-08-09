@@ -12,3 +12,6 @@ release
 *.local
 coverage
 .vitest-cache
+# Распакованная копия установленного приложения
+/MASROUTER Desktop/
+/MASROUTER Desktop/**/
