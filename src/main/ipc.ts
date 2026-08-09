@@ -138,6 +138,19 @@ export function registerIpc(): void {
     }
   });
 
+  ipcMain.handle(IPC.PROVIDER_LIST_MODELS, async (_e, providerId: string) => {
+    const provider = getProviders().find((p) => p.id === providerId);
+    if (!provider) throw new Error('Провайдер не найден');
+    const p = buildProvider(provider, provider.defaultModelId || 'placeholder');
+    if (!p) throw new Error('Провайдер выключен — сначала включите его');
+    if (!p.listModels) {
+      throw new Error(`Провайдер ${provider.label} (${provider.kind}) не поддерживает получение списка моделей`);
+    }
+    const list = await p.listModels();
+    log('info', 'provider', `ListModels ${provider.label}: ${list.length} моделей`);
+    return list;
+  });
+
   // === Storage generic ===
   ipcMain.handle(IPC.STORAGE_GET, (_e, key: string) => {
     const all: any = getAll();

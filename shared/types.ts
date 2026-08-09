@@ -244,4 +244,5 @@ export interface LLMProvider {
   kind: ProviderKind;
   testConnection(): Promise<{ ok: boolean; message: string; latencyMs?: number }>;
   chat(messages: LLMMessage[], opts: { model: string; temperature?: number; maxTokens?: number }): Promise<LLMResponse>;
+  listModels?(): Promise<{ id: string; ownedBy?: string }[]>;
 }

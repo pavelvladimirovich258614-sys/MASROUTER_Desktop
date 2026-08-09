@@ -1,6 +1,6 @@
 // StepFun provider — OpenAI-compatible, ключ из кабинета StepFun.
 
-import { makeOpenAICompatibleProvider, OpenAICompatibleConfig } from './openaiCompatible';
+import { makeOpenAICompatibleProvider, OpenAICompatibleConfig, listOpenAICompatibleModels } from './openaiCompatible';
 import type { LLMProvider } from '../../../shared/types';
 
 export function makeStepFunProvider(cfg: { apiKey: string; defaultModel: string }): LLMProvider {
@@ -9,5 +9,11 @@ export function makeStepFunProvider(cfg: { apiKey: string; defaultModel: string 
     apiKey: cfg.apiKey,
     defaultModel: cfg.defaultModel
   };
-  return makeOpenAICompatibleProvider(wrapped);
+  const base = makeOpenAICompatibleProvider(wrapped);
+  return {
+    ...base,
+    async listModels() {
+      return listOpenAICompatibleModels(wrapped);
+    }
+  };
 }

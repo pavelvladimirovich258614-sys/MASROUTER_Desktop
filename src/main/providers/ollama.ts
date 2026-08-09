@@ -64,6 +64,13 @@ export function makeOllamaProvider(cfg: OllamaConfig): LLMProvider {
         finishReason: data?.done ? 'stop' : 'unknown',
         raw: data
       };
+    },
+    async listModels() {
+      const r = await fetch(`${cfg.baseUrl}/api/tags`, { method: 'GET' });
+      if (!r.ok) throw new Error(`Ollama /api/tags вернул ${r.status}`);
+      const data: any = await r.json();
+      const list: any[] = data?.models || [];
+      return list.map((m) => ({ id: m.name, ownedBy: 'ollama' }));
     }
   };
 }

@@ -29,6 +29,7 @@ export const IPC = {
   PROVIDER_TEST: 'provider:test',
   PROVIDER_CHAT: 'provider:chat',
   PROVIDER_LIST: 'provider:list',
+  PROVIDER_LIST_MODELS: 'provider:listModels',
   // storage
   STORAGE_GET: 'storage:get',
   STORAGE_SET: 'storage:set',

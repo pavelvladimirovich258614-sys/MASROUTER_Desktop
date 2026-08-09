@@ -22,6 +22,7 @@ const api = {
   providerTest: (id: string, model: string) => ipcRenderer.invoke(IPC.PROVIDER_TEST, id, model),
   providerChat: (id: string, model: string, messages: LLMMessage[]) =>
     ipcRenderer.invoke(IPC.PROVIDER_CHAT, id, model, messages),
+  providerListModels: (id: string) => ipcRenderer.invoke(IPC.PROVIDER_LIST_MODELS, id),
 
   // Storage
   storageGet: (key: string) => ipcRenderer.invoke(IPC.STORAGE_GET, key),

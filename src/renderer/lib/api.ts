@@ -20,6 +20,7 @@ export interface MasRouterApi {
   providerList: () => Promise<any[]>;
   providerTest: (id: string, model: string) => Promise<{ ok: boolean; message: string; latencyMs?: number }>;
   providerChat: (id: string, model: string, messages: LLMMessage[]) => Promise<LLMResponse>;
+  providerListModels: (id: string) => Promise<{ id: string; ownedBy?: string }[]>;
   storageGet: (key: string) => Promise<unknown>;
   storageSet: (key: string, value: unknown) => Promise<{ ok: boolean }>;
   storageExport: () => Promise<{ ok: boolean; canceled?: boolean; path?: string; error?: string }>;
@@ -82,6 +83,9 @@ const mockFallback: MasRouterApi = {
   providerTest: async () => ({ ok: false, message: 'Browser preview — тест недоступен' }),
   providerChat: async () => {
     throw new Error('LLM недоступен в browser preview');
+  },
+  providerListModels: async () => {
+    throw new Error('listModels недоступен в browser preview — откройте в Electron');
   },
   storageGet: async (key: string) => {
     const map: Record<string, unknown> = {

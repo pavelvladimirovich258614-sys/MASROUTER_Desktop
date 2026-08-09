@@ -10,6 +10,13 @@ export interface OpenAICompatibleConfig {
   extraHeaders?: Record<string, string>;
 }
 
+export interface ProviderModelInfo {
+  id: string;
+  name?: string;
+  ownedBy?: string;
+  created?: number;
+}
+
 export function makeOpenAICompatibleProvider(cfg: OpenAICompatibleConfig): LLMProvider {
   return {
     kind: 'openai-compatible',
@@ -64,6 +71,34 @@ export function makeOpenAICompatibleProvider(cfg: OpenAICompatibleConfig): LLMPr
         finishReason: choice?.finish_reason || 'unknown',
         raw: data
       };
+    },
+    async listModels() {
+      return listOpenAICompatibleModels(cfg);
     }
   };
+}
+
+/**
+ * Получает список моделей через GET {baseUrl}/models.
+ * Возвращает массив {id, name?, ownedBy?}. Бросает ошибку при сетевом сбое.
+ */
+export async function listOpenAICompatibleModels(
+  cfg: OpenAICompatibleConfig
+): Promise<ProviderModelInfo[]> {
+  const r = await fetch(`${cfg.baseUrl}/models`, {
+    method: 'GET',
+    headers: {
+      ...(cfg.apiKey ? { Authorization: `Bearer ${cfg.apiKey}` } : {}),
+      ...(cfg.extraHeaders || {})
+    }
+  });
+  if (!r.ok) {
+    const errText = await r.text();
+    throw new Error(`/models вернул ${r.status}: ${errText.slice(0, 200)}`);
+  }
+  const data: any = await r.json();
+  const list: any[] = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+  return list
+    .map((m) => ({ id: m.id, name: m.id, ownedBy: m.owned_by, created: m.created }))
+    .filter((m) => typeof m.id === 'string' && m.id.length > 0);
 }

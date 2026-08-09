@@ -1,8 +1,7 @@
-// MiniMax provider — заглушка с тем же интерфейсом.
-// На момент написания MiniMax — это placeholder, реальный endpoint пользователь
-// прописывает сам в настройках.
+// MiniMax provider — обёртка над OpenAI-compatible.
+// Делегирует listModels в OpenAI-compatible.
 
-import { makeOpenAICompatibleProvider, OpenAICompatibleConfig } from './openaiCompatible';
+import { makeOpenAICompatibleProvider, OpenAICompatibleConfig, listOpenAICompatibleModels } from './openaiCompatible';
 import type { LLMProvider } from '../../../shared/types';
 
 export function makeMiniMaxProvider(cfg: { baseUrl: string; apiKey: string; defaultModel: string }): LLMProvider {
@@ -12,5 +11,11 @@ export function makeMiniMaxProvider(cfg: { baseUrl: string; apiKey: string; defa
     defaultModel: cfg.defaultModel,
     extraHeaders: { 'X-Provider': 'MiniMax' }
   };
-  return makeOpenAICompatibleProvider(wrapped);
+  const base = makeOpenAICompatibleProvider(wrapped);
+  return {
+    ...base,
+    async listModels() {
+      return listOpenAICompatibleModels(wrapped);
+    }
+  };
 }

@@ -56,7 +56,7 @@ const DEFAULTS: StoreShape = {
       id: 'minimax-default',
       kind: 'minimax',
       label: 'MiniMax',
-      baseUrl: 'https://api.MiniMax.chat/v1',
+      baseUrl: 'https://api.minimax.chat/v1',
       apiKeyMasked: '',
       enabled: false
     },
@@ -77,7 +77,10 @@ const DEFAULTS: StoreShape = {
       enabled: false
     }
   ],
-  models: BUILTIN_MODELS,
+  // Модели НЕ сидируются — пользователь подтягивает их через ✓ Тест у провайдера.
+  // Builtin (BUILTIN_MODELS в masrouterData.ts) остаётся как reference для расчёта
+  // стоимости в routerEngine, но не попадает в storage.
+  models: [],
   roles: BUILTIN_ROLES,
   topologies: BUILTIN_TOPOLOGIES,
   caseStudies: BUILTIN_CASE_STUDIES,
@@ -103,7 +106,7 @@ let store: Store<StoreShape> | null = null;
  * Версия схемы storage. При изменении схемы (новые seed-провайдеры, новые
  * обязательные поля) — увеличить, чтобы миграция применилась заново.
  */
-const STORAGE_SCHEMA_VERSION = 2;
+const STORAGE_SCHEMA_VERSION = 3;
 
 export function initStorage(): void {
   store = new Store<StoreShape>({
@@ -125,10 +128,11 @@ function migrate(): void {
 
   // Базовые поля — если их нет, инициализируем дефолтами.
   if (!cur.settings) store.set('settings', DEFAULTS.settings);
-  if (!Array.isArray(cur.models) || cur.models.length === 0) store.set('models', DEFAULTS.models);
   if (!Array.isArray(cur.roles) || cur.roles.length === 0) store.set('roles', DEFAULTS.roles);
   if (!Array.isArray(cur.topologies) || cur.topologies.length === 0) store.set('topologies', DEFAULTS.topologies);
   if (!Array.isArray(cur.caseStudies) || cur.caseStudies.length === 0) store.set('caseStudies', DEFAULTS.caseStudies);
+  // Модели: НЕ сидируем defaults. Если пусто — пользователь увидит подсказку
+  // "подключите провайдера и нажмите ✓ Тест". Не затираем существующие модели.
 
   // Провайдеры: мигрируем аккуратно. Если никого нет — ставим defaults.
   // Если есть, но кого-то из defaults не хватает (например, MiniMax) — добавляем.
@@ -142,20 +146,6 @@ function migrate(): void {
     if (missing.length > 0) {
       providers = [...providers, ...missing];
       store.set('providers', providers);
-    }
-  }
-
-  // Модели: то же самое — добавляем недостающие builtin-модели.
-  let models: any[] = Array.isArray(cur.models) ? cur.models : [];
-  if (models.length === 0) {
-    models = DEFAULTS.models;
-    store.set('models', models);
-  } else {
-    const existingIds = new Set(models.map((m) => m.id));
-    const missing = DEFAULTS.models.filter((m) => !existingIds.has(m.id));
-    if (missing.length > 0) {
-      models = [...models, ...missing];
-      store.set('models', models);
     }
   }
 
