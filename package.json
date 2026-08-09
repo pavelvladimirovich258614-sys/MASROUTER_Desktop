@@ -1,0 +1,67 @@
+{
+  "name": "masrouter-desktop",
+  "productName": "MASROUTER Desktop",
+  "version": "0.1.0",
+  "description": "Локальное десктопное приложение для маршрутизации LLM в Multi-Agent Systems по логике MasRouter (arXiv:2502.11133).",
+  "main": "dist/main/src/main/index.js",
+  "author": {
+    "name": "MASROUTER Team",
+    "email": "team@masrouter.local"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/yanweiyue/masrouter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yanweiyue/masrouter.git"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:renderer": "vite",
+    "dev:electron": "electron .",
+    "build:icons": "node scripts/generate-icon.mjs && node scripts/generate-ico.mjs",
+    "build:renderer": "tsc -p tsconfig.renderer.json && vite build",
+    "build:main": "tsc -p tsconfig.main.json && node scripts/postbuild.mjs",
+    "build": "npm run build:main && npm run build:renderer",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.main.json",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\" \"shared/**/*.ts\" \"tests/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dist": "npm run build:icons && npm run build && electron-builder",
+    "dist:win": "npm run build:icons && npm run build && electron-builder --win",
+    "dist:mac": "npm run build:icons && npm run build && electron-builder --mac",
+    "dist:linux": "npm run build:icons && npm run build && electron-builder --linux"
+  },
+  "dependencies": {
+    "electron-store": "8.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.26.2",
+    "zod": "3.23.8",
+    "zustand": "4.5.5"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "20.16.5",
+    "@types/react": "18.3.5",
+    "@types/react-dom": "18.3.0",
+    "@typescript-eslint/eslint-plugin": "7.18.0",
+    "@typescript-eslint/parser": "7.18.0",
+    "@vitejs/plugin-react": "4.3.1",
+    "electron": "32.0.1",
+    "electron-builder": "25.0.5",
+    "eslint": "8.57.0",
+    "eslint-plugin-react": "7.35.2",
+    "eslint-plugin-react-hooks": "4.6.2",
+    "prettier": "3.3.3",
+    "to-ico": "^1.1.5",
+    "typescript": "5.5.4",
+    "vite": "5.4.2",
+    "vitest": "2.0.5"
+  },
+  "build": {
+    "extends": "./electron-builder.yml"
+  }
+}

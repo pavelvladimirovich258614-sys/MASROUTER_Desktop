@@ -1,0 +1,6 @@
+Сгенерируйте PNG-иконку (256x256 или 512x512) из assets/icon.svg:
+  npx -p @resvg/resvg-js resvg assets/icon.svg assets/icon.png
+
+Или используйте любой онлайн-конвертер SVG → PNG.
+Для Windows .ico:
+  npx -p png-to-ico-cli png-to-ico assets/icon.png -o assets/icon.ico

@@ -1,0 +1,9 @@
+@echo off
+REM Build script for Windows.
+echo [1/3] Installing dependencies...
+call npm install || exit /b 1
+echo [2/3] Building renderer + main...
+call npm run build || exit /b 1
+echo [3/3] Building installers via electron-builder...
+call npx electron-builder --win || exit /b 1
+echo Done. Artifacts in release\
