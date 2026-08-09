@@ -41,6 +41,21 @@ export const ModelsPage: React.FC = () => {
     }
   }
 
+  async function toggleProviderEnabled(id: string) {
+    // Оптимистичное обновление — без вызова refresh(), чтобы состояние не
+    // сбрасывалось обратно (особенно важно в browser preview).
+    const next = providers.map((x) => x.id === id ? { ...x, enabled: !x.enabled } : x);
+    useAppStore.setState({ providers: next });
+    await api.storageSet('providers', next);
+  }
+
+  async function updateProviderBaseUrl(id: string, baseUrl: string) {
+    const next = providers.map((x) => x.id === id ? { ...x, baseUrl } : x);
+    useAppStore.setState({ providers: next });
+    await api.storageSet('providers', next);
+    toast('success', 'Base URL сохранён');
+  }
+
   return (
     <div className="page">
       <div className="page__header">
@@ -60,7 +75,8 @@ export const ModelsPage: React.FC = () => {
           <br /><br />
           <strong>Шаги подключения:</strong>
           <ol style={{ paddingLeft: 20, marginTop: 6 }}>
-            <li>В таблице «Провайдеры» нажми <strong>«+ Установить»</strong> в колонке API Key, введи ключ — он сохранится зашифрованным (safeStorage, ОС-уровень).</li>
+            <li>Отредактируй <strong>Base URL</strong> если у тебя кастомный endpoint (по умолчанию уже стоят правильные для каждого провайдера).</li>
+            <li>Нажми <strong>«Установить ключ»</strong> в колонке API Key, введи ключ — сохранится зашифрованным (safeStorage, ОС-уровень).</li>
             <li>Поставь чекбокс <strong>«Включён»</strong> в строке провайдера.</li>
             <li>Нажми <strong>«✓ Тест»</strong> — приложение реально постучится в API и покажет результат (HTTP-статус + latency).</li>
             <li>В таблице «Модели (Приложение E.1)» поставь чекбокс <strong>«Включена»</strong> на нужных моделях. Только они попадут в кандидаты для маршрутизации.</li>
@@ -75,9 +91,9 @@ export const ModelsPage: React.FC = () => {
             <tr>
               <th>Провайдер</th>
               <th>Kind</th>
-              <th>Base URL</th>
+              <th style={{ minWidth: 240 }}>Base URL</th>
               <th>API Key</th>
-              <th>Включён</th>
+              <th>Вкл</th>
               <th>Действия</th>
             </tr>
           </thead>
@@ -87,20 +103,25 @@ export const ModelsPage: React.FC = () => {
               return (
                 <tr key={p.id}>
                   <td><strong>{p.label}</strong></td>
-                  <td className="muted mono" style={{ fontSize: 12 }}>{p.kind}</td>
-                  <td className="mono" style={{ fontSize: 11 }}>{p.baseUrl}</td>
-                  <td className="mono" style={{ fontSize: 11 }}>
+                  <td className="mono" style={{ fontSize: 12, color: 'var(--color-muted-strong)' }}>{p.kind}</td>
+                  <td>
+                    <input
+                      className="input"
+                      style={{ fontSize: 12, padding: '6px 8px', color: 'var(--color-text)', background: 'var(--color-panel-2)' }}
+                      value={p.baseUrl}
+                      placeholder="https://api.example.com/v1"
+                      onChange={(e) => updateProviderBaseUrl(p.id, e.target.value)}
+                    />
+                  </td>
+                  <td>
                     <ProviderKeyCell provider={p} onSetKey={() => setKeyModal({ providerId: p.id, key: '' })} />
                   </td>
                   <td>
                     <input
                       type="checkbox"
                       checked={p.enabled}
-                      onChange={async () => {
-                        const next = providers.map((x) => x.id === p.id ? { ...x, enabled: !x.enabled } : x);
-                        await api.storageSet('providers', next);
-                        await refresh();
-                      }}
+                      onChange={() => toggleProviderEnabled(p.id)}
+                      style={{ width: 18, height: 18, cursor: 'pointer' }}
                     />
                   </td>
                   <td>
@@ -109,7 +130,7 @@ export const ModelsPage: React.FC = () => {
                       disabled={!p.enabled || !defModel || testing === p.id}
                       onClick={() => defModel && testProvider(p, defModel)}
                     >
-                      {testing === p.id ? '⏳' : '✓ Тест'}
+                      {testing === p.id ? '⏳ …' : '✓ Тест'}
                     </button>
                   </td>
                 </tr>
@@ -133,23 +154,28 @@ export const ModelsPage: React.FC = () => {
               <th>MMLU</th>
               <th>HumanEval</th>
               <th>MATH</th>
-              <th>Включена</th>
+              <th>Вкл</th>
             </tr>
           </thead>
           <tbody>
             {models.map((m) => (
               <tr key={m.id}>
-                <td className="mono" style={{ fontSize: 11 }}>{m.id}</td>
+                <td className="mono" style={{ fontSize: 12, color: 'var(--color-text)' }}>{m.id}</td>
                 <td><strong>{m.name}</strong></td>
                 <td><span className="badge">{m.tier}</span></td>
-                <td className="muted" style={{ fontSize: 12 }}>{m.provider}</td>
-                <td className="mono">{m.tier === 'local-light' ? '$0' : `$${m.inputPricePerMTok}`}</td>
-                <td className="mono">{m.tier === 'local-light' ? '$0' : `$${m.outputPricePerMTok}`}</td>
-                <td className="mono">{m.benchmarks?.mmlu ?? '—'}</td>
-                <td className="mono">{m.benchmarks?.humaneval ?? '—'}</td>
-                <td className="mono">{m.benchmarks?.math ?? '—'}</td>
+                <td className="mono" style={{ fontSize: 12, color: 'var(--color-muted-strong)' }}>{m.provider}</td>
+                <td className="mono" style={{ color: 'var(--color-text)' }}>{m.tier === 'local-light' ? '$0' : `$${m.inputPricePerMTok}`}</td>
+                <td className="mono" style={{ color: 'var(--color-text)' }}>{m.tier === 'local-light' ? '$0' : `$${m.outputPricePerMTok}`}</td>
+                <td className="mono" style={{ color: 'var(--color-text)' }}>{m.benchmarks?.mmlu ?? '—'}</td>
+                <td className="mono" style={{ color: 'var(--color-text)' }}>{m.benchmarks?.humaneval ?? '—'}</td>
+                <td className="mono" style={{ color: 'var(--color-text)' }}>{m.benchmarks?.math ?? '—'}</td>
                 <td>
-                  <input type="checkbox" checked={m.enabled} onChange={() => toggleEnabled(m.id)} />
+                  <input
+                    type="checkbox"
+                    checked={m.enabled}
+                    onChange={() => toggleEnabled(m.id)}
+                    style={{ width: 18, height: 18, cursor: 'pointer' }}
+                  />
                 </td>
               </tr>
             ))}
@@ -173,6 +199,7 @@ export const ModelsPage: React.FC = () => {
               />
               <div className="form-field__hint">
                 Ключ будет зашифрован через safeStorage. В UI отображается только маска.
+                Чтобы изменить — нажми «Изменить ключ» в таблице.
               </div>
             </div>
             <div className="modal__actions">
@@ -192,12 +219,12 @@ const ProviderKeyCell: React.FC<{ provider: ProviderConfig; onSetKey: () => void
     api.apiKeyMask(provider.id).then(setMask);
   }, [provider.id]);
   if (!mask) {
-    return <button className="btn btn--small btn--ghost" onClick={onSetKey}>+ Установить</button>;
+    return <button className="btn btn--small" onClick={onSetKey}>+ Установить ключ</button>;
   }
   return (
     <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-      <span>{mask}</span>
-      <button className="btn btn--small btn--ghost" onClick={onSetKey}>↻</button>
+      <span style={{ color: 'var(--color-text)', fontWeight: 500 }}>{mask}</span>
+      <button className="btn btn--small" onClick={onSetKey}>Изменить</button>
     </span>
   );
 };
